@@ -1,0 +1,8 @@
+point_interpolant_exe: /home/trisst/3dlab/PoissonRecon/bin/PointInterpolant
+skinning_grid_depth: 8
+lbs_surf_grad_exe: step1_diffused_skinning/lbs_surf_grad
+tmp_folder_constraints: data_tmp_constraints
+tmp_folder_skinning_grid: data_tmp_skinning_grid
+
+ask_before_os_system: true
+subject: rp_eric_posed_006

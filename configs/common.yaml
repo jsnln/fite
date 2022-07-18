@@ -1,0 +1,10 @@
+expname: resynth_pretrained
+result_folder: results
+
+smpl_model_path: '/home/user/humanreconlab/smpl_assets/models_v100'
+data_scans_path: data_scans
+data_templates_path: data_templates
+
+num_joints: 24 # doesn't support other values yet
+leg_angle: 15.0
+n_cano_points: 50000

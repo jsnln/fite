@@ -1,0 +1,67 @@
+
+datamodule:
+  num_workers: 10
+  subject: 'rp_eric_posed_006'
+  clothing: 'rp_eric_posed_006.96'
+
+  batch_size: 8
+  processor:
+    points_per_frame: 5000
+    sampler:
+      global_sigma: 1.8
+      local_sigma: 0.025
+
+# epoch: last
+# resume: false
+
+trainer:
+  gradient_clip_val: 0.1
+  check_val_every_n_epoch: 4
+  save_vis_every_n_iters: 50
+  save_ckpt_every_n_iters: 1000
+  deterministic: true
+  max_steps: 9001
+  gpus: 1
+model:
+  # shape MLP
+  network:
+    d_in: 3
+    d_out: 1
+    depth: 8
+    width: 256
+    multires: 0
+    skip_layer: [4]
+    cond_layer: [4]
+    dim_cond_embed: 8
+    weight_norm: true
+    geometric_init: true
+    bias: 1
+  deformer:
+    softmax_mode: hierarchical
+    # LBS MLP
+    network:
+      d_in: 3
+      d_out: 25
+      depth: 4
+      width: 128
+      multires: 0
+      skip_layer: []
+      cond_layer: []
+      dim_cond_embed: 0
+      weight_norm: true
+      geometric_init: false
+      bias: 1
+  optim:
+    lr: 0.001
+  soft_blend: 5
+  pose_conditioning: true
+  nepochs_pretrain: 0
+  lambda_bone_occ: 1
+  lambda_bone_w: 10
+
+extraction:
+  resolution_low: 256
+  resolution_high: 512
+  save_mesh: true
+  every_n_frames: 1
+  fast_mode: true

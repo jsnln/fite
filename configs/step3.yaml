@@ -1,0 +1,45 @@
+# data
+data_posmaps_path: data_posmaps
+
+# loss func related
+w_m2s: 10000.0
+w_s2m: 10000.0
+w_normal: 1.0
+w_rgl: 2000.0
+w_latent_rgl: 1.0
+
+# training / eval related
+epochs: 401
+train_normals_from_start: false
+decay_start: 250
+rise_start: 250
+batch_size: 4
+decay_every: 400
+rise_every: 400
+
+save_ckpt_every: 25
+save_pcd_every: 500
+lr: 0.0003
+lr_geomfeat: 0.0005
+predeform: true
+save_cano: false
+load_epoch: null
+eval_use_gt: false
+
+# architecture related
+hsize: 256
+nf: 16
+c_geom: 64
+c_pose: 64
+up_mode: upconv
+residual_scaling: 0.01
+predeform_scaling: 0.005
+use_dropout: false
+
+# data related
+data_spacing: 1
+
+posmap_size: 256
+num_workers: 10
+
+selected_subjects: null
