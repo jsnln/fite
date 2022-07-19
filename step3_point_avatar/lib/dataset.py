@@ -1,12 +1,11 @@
-from os.path import join, basename, splitext
+from os.path import join, basename
 import glob
 from tqdm import tqdm
 import math
 import numpy as np
 import smplx
 import torch
-import torch.nn.functional as F
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset
 import glm
 
 from smplx.lbs import vertices2joints

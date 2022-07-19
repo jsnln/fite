@@ -18,8 +18,6 @@ namespace HEMesh {
     bool loadWeights(const char * txt_fn, std::vector<HEfloat> & out_weights);
     bool writeToOBJ(const char * obj_fn, const std::vector<HEfloat> & out_verts, const std::vector<HEint> & out_faces);
     bool writeLBSWeightsToTxt(const char * obj_fn);
-
-    typedef std::vector<HEfloat> DistTableArray;
 }
 
 struct HEMesh::HEdge {

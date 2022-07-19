@@ -1,31 +1,23 @@
 import os
-from os.path import splitext
-import torch
-
-from torch.utils.data import DataLoader, Dataset
-import numpy as np
-import os
 from os.path import join
 import glob
 import yaml
 import trimesh
 
+import numpy as np
+import torch
+from torch.utils.data import Dataset
+
 import kaolin
 from ...lib.model.smpl import SMPLServer
 from ...lib.model.sample import PointInSpace
-
-from icecream import ic
 
 class FITEDataSet(Dataset):
 
     def __init__(self, dataset_path, data_templ_path, opt, subject, clothing, split):
 
-        ic(dataset_path)
 
         self.regstr_list = glob.glob(join(dataset_path, subject, split, clothing+'_**.npz'), recursive=True)
-        ic(join(dataset_path, subject, clothing+'_**.npz'))
-        ic(len(self.regstr_list))
-        # ic(os.path.join(dataset_path, 'cape_release', 'sequences', '%05d'%subject, clothing))
 
         with open(join(data_templ_path, 'gender_list.yaml') ,'r') as f:
             self.gender = yaml.safe_load(f)[subject]
@@ -77,7 +69,6 @@ class FITEDataSet(Dataset):
         random_pts = torch.gather(verts, 0, random_idx.expand(-1, num_dim))
         data['pts_d']  = self.sampler.get_points(random_pts[None])[0]
         data['occ_gt'] = kaolin.ops.mesh.check_sign(verts[None], faces, data['pts_d'][None]).float()[0].unsqueeze(-1)
-        # ic(faces)
 
         return data
 

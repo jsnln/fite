@@ -5,7 +5,6 @@
 #include <vector>
 
 namespace HEMath {
-    extern HEfloat INVERTIBLE_DET_EPS;
     class Vec3;
     HEfloat inner_prod(const Vec3 & u, const Vec3 & v);
     Vec3 cross_prod(const Vec3 & u, const Vec3 & v);

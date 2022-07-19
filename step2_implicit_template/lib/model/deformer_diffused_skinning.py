@@ -4,10 +4,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 from .broyden import broyden
-from .network import ImplicitNetwork
-from .helpers import hierarchical_softmax
-
-from icecream import ic
 
 class ForwardDeformerDiffusedSkinning(torch.nn.Module):
     """

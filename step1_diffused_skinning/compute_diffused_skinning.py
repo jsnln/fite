@@ -10,13 +10,9 @@ from glob import glob
 import array
 import tqdm
 
-import argparse
 import smplx
-from fiteutils.lbs_and_render import lbs, inv_lbs, vertices2joints
-import torch.nn.functional as F
-
-from .parser import parse_args
-
+from smplx.lbs import vertices2joints
+from fiteutils.lbs import lbs
 
 if __name__ == '__main__':
 
@@ -64,7 +60,7 @@ if __name__ == '__main__':
     tpose_verts = torch.from_numpy(tpose_mesh.vertices).float()[None]
     tpose_joints = vertices2joints(smpl_model.J_regressor, tpose_verts)
 
-    out = lbs(tpose_verts, tpose_joints, cpose_param, smpl_model.parents, smpl_model.lbs_weights[None], return_tfs=False)
+    out = lbs(tpose_verts, tpose_joints, cpose_param, smpl_model.parents, smpl_model.lbs_weights[None])
     cpose_verts = out['v_posed'][0].cpu().numpy()
 
     # np.savetxt('cano_data_grad_constraints.xyz', out['v_posed'][0], fmt="%.8f")
@@ -146,40 +142,3 @@ if __name__ == '__main__':
     grids_all = np.clip(grids_all, 0.0, 1.0)
     grids_all = grids_all / grids_all.sum(0)[None]
     np.save(join(data_templates_path, subject, subject + '_cano_lbs_weights_grid_float32.npy'), grids_all.astype(np.float32))
-
-
-    ### NOTE query the smpl surface skinning weight using this grid
-    # def inv_transform_v(v, scale_data, scale_grid, grid_res, transl):
-    #     v = v - transl[None]
-    #     v = v / scale_grid
-    #     v = v * 2
-    #     return v
-
-    # def transform_v(v, scale_data, scale_grid, grid_res, transl):
-    #     v = v / (grid_res - 1)
-    #     v = v - 0.5
-    #     v = v * scale_grid
-    #     v = v + transl[None]
-    #     v[:, ::2] = np.flip(v[:, ::2], -1)
-    #     return v
-
-    # cano_verts = cpose_verts[:, :3]
-    # bbox_data_min = cano_verts.min(0)
-    # bbox_data_max = cano_verts.max(0)
-
-    # bbox_data_extend = (bbox_data_max - bbox_data_min).max()
-    # bbox_grid_extend = bbox_data_extend * 1.1
-
-    # center = (bbox_data_min + bbox_data_max) / 2
-
-    # ### NOTE querying
-    # # query_verts = cano_verts
-    # clothed_mesh = trimesh.load('cano_data_smplmesh.obj', process=False)  # for smpl
-    # query_verts = clothed_mesh.vertices
-
-    # v_cano_in_grid_coords = inv_transform_v(query_verts, bbox_data_extend, bbox_grid_extend, 256, center)
-    # v_cano_in_grid_coords_pt = torch.from_numpy(v_cano_in_grid_coords).float()
-    # grid_pt = torch.from_numpy(grids_all).float()
-
-    # out = F.grid_sample(grid_pt[None], v_cano_in_grid_coords_pt[None, None, None], align_corners=False)[0, :, 0, 0].T  # [24, 6890]
-    # np.savez('clothed_diffused_skinning.npz', verts=query_verts, faces=clothed_mesh.faces, weights=out.numpy())

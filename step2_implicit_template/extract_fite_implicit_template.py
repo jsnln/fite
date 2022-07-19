@@ -1,23 +1,16 @@
 import os
 import glob
-import hydra
 import torch
-import imageio
 import numpy as np
 
 import yaml
 import trimesh
-from os.path import join, basename
-
-from icecream import ic
-
-from tqdm import trange
+from os.path import join
 
 from pytorch3d.ops import sample_farthest_points
 
 from .lib.snarf_model_diffused_skinning import SNARFModelDiffusedSkinning
 from .lib.model.helpers import rectify_pose
-from .parser import parse_args
 
 if __name__ == '__main__':
     opt = {}

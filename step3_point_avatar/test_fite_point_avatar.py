@@ -1,17 +1,11 @@
 import yaml
-import argparse
-from parso import parse
 from tqdm import tqdm
-import math
-import smplx
 import matplotlib.pyplot as plt
 import numpy as np
-import trimesh
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import torch.optim as optim
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import DataLoader
 
 import os
 from os.path import join
@@ -22,7 +16,6 @@ from .lib.dataset import FITEPosmapDataset, FITECanoDataRepository
 from .lib.losses import normal_loss, chamfer_loss_separate
 from .lib.lbs import lbs, inv_lbs
 from .lib.utils import save_result_examples
-from .parser import parse_args
 
 
 if __name__ == '__main__':

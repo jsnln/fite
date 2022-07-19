@@ -1,7 +1,7 @@
 expname: resynth_pretrained
 result_folder: results
 
-smpl_model_path: '/home/user/humanreconlab/smpl_assets/models_v100'
+smpl_model_path: smpl_models
 data_scans_path: data_scans
 data_templates_path: data_templates
 

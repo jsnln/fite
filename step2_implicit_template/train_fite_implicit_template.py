@@ -1,13 +1,11 @@
 import yaml
-from icecream import ic
 import cv2
 import torch
 from torch.nn.utils import clip_grad_norm_
 from torch.utils.data import DataLoader
 
 import os
-from os.path import splitext, join, basename
-import numpy as np
+from os.path import join
 
 from .lib.dataset.fite import FITEDataSet, FITEDataProcessor
 from .lib.snarf_model_diffused_skinning import SNARFModelDiffusedSkinning

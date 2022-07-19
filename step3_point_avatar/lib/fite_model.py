@@ -2,10 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F 
 
-
-from icecream import ic
-
-from .modules import UnetNoCond5DS, UnetNoCond6DS, UnetNoCond7DS, GeomConvLayers, GaussianSmoothingLayers, GeomConvBottleneckLayers, ShapeDecoder, PreDeformer
+from .modules import UnetNoCond5DS, UnetNoCond6DS, UnetNoCond7DS, ShapeDecoder, PreDeformer
 
 class FITEModel(nn.Module):
     def __init__(

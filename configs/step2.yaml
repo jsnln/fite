@@ -1,8 +1,8 @@
 
 datamodule:
   num_workers: 10
-  subject: 'rp_eric_posed_006'
-  clothing: 'rp_eric_posed_006.96'
+  subject: 'rp_carla_posed_004'
+  clothing: 'rp_carla_posed_004.96'
 
   batch_size: 8
   processor:

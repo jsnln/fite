@@ -1,16 +1,8 @@
 import yaml
 import tqdm
-import math
-import smplx
-import matplotlib.pyplot as plt
-import numpy as np
-import trimesh
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
-from torch.utils.data import Dataset, DataLoader
-import torch.optim as optim
-from icecream import ic
+from torch.utils.data import DataLoader
 
 import os
 from os.path import join

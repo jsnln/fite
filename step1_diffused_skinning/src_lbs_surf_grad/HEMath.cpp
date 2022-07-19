@@ -5,7 +5,6 @@
 #include "HEMath.h"
 #define NORMALIZE_EPS 1e-8f
 #define HOMOGENIZE_EPS 1e-8f
-extern HEfloat HEMath::INVERTIBLE_DET_EPS = 1e-3f;
 
 HEMath::Vec3::Vec3(): x(0.0f), y(0.0f), z(0.0f) {}
 HEMath::Vec3::Vec3(const HEMath::Vec3 & other): x(other.x), y(other.y), z(other.z) {}

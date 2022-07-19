@@ -13,9 +13,6 @@ from ..lib.utils.render import render_trimesh, render_joint, weights2colors
 
 import kaolin
 
-from icecream import ic
-
-
 class SNARFModelDiffusedSkinning(nn.Module):
 
     def __init__(self, soft_blend, smpl_model_path, pose_conditioning, opt_network, subject, cpose_smpl_mesh_path, cpose_weight_grid_path, meta_info, data_processor=None):

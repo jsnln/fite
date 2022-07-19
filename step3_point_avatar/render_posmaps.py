@@ -1,5 +1,3 @@
-import pickle
-import matplotlib.pyplot as plt
 import glob
 import math
 import os
@@ -11,7 +9,7 @@ import numpy as np
 import trimesh
 from tqdm import tqdm
 import glob
-import cv2
+import yaml
 
 import smplx
 
@@ -22,8 +20,8 @@ import numpy as np
 from OpenGL.GL import *
 import glfw
 
-import yaml
-from .lib.lbs import batch_rodrigues, transform_mat, vertices2joints, batch_rigid_transform, lbs, inv_lbs, save_skeleton
+from smplx.lbs import vertices2joints
+from .lib.lbs import lbs, inv_lbs
 from .lib.shader_utils import createProgram, loadShader
 
 ### NOTE for debugging, get the posed point cloud

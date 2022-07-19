@@ -1,18 +1,7 @@
-import matplotlib.pyplot as plt
-import glob
-import math
-import os
-from os.path import join, basename, splitext
 import torch
 import torch.nn
 import torch.nn.functional as F
 import numpy as np
-import trimesh
-import tqdm
-
-from icecream import ic
-
-# from shader_utils import loadShader
 
 def batch_rodrigues(
     rot_vecs,
