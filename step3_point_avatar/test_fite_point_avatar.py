@@ -53,7 +53,7 @@ if __name__ == '__main__':
             n_points_cano_data=opt['n_cano_points'],
             cano_pose_leg_angle=opt['leg_angle'],
             smpl_model_path=opt['smpl_model_path']
-    ).set_device('cuda')
+    ).set_device(opt['device'])
 
     test_dataset = FITEPosmapDataset(
             subject_list=opt['subject_list'],
@@ -81,7 +81,7 @@ if __name__ == '__main__':
                       c_pose=opt['c_pose'],
                       up_mode=opt['up_mode'],
                       use_dropout=opt['use_dropout']
-                      ).cuda()
+                      ).to(opt['device'])
     
     # model.load_state_dict(torch.load('checkpoints/checkpoint-1000.pt'))
     if opt['load_epoch'] is None:
@@ -108,11 +108,11 @@ if __name__ == '__main__':
             # ------------ load batch data and reshaping ------------
             
             if opt['eval_use_gt']:
-                points_gt = batch['points'].cuda()
-                normals_gt = batch['normals'].cuda()
-            pose = batch['pose'].cuda()
-            transl = batch['transl'].cuda() # NOTE already removed from points, needed only for debug
-            subject_id = batch['subject_id'].cuda()
+                points_gt = batch['points'].to(opt['device'])
+                normals_gt = batch['normals'].to(opt['device'])
+            pose = batch['pose'].to(opt['device'])
+            transl = batch['transl'].to(opt['device']) # NOTE already removed from points, needed only for debug
+            subject_id = batch['subject_id'].to(opt['device'])
 
             
             posmaps_batch = {}
@@ -121,7 +121,7 @@ if __name__ == '__main__':
             # ic(projected_pts_batch)
             for proj_id in range(len(model.projection_list)):
                 proj_direction = model.projection_list[proj_id]['dirc']
-                posmaps_batch[proj_direction] = batch[f'posmap_{proj_direction}'].cuda()
+                posmaps_batch[proj_direction] = batch[f'posmap_{proj_direction}'].to(opt['device'])
                 # posmap_weights_batch[proj_direction] = cano_data_repo.posmap_weights[proj_direction][subject_id]
                 projected_pts_batch[proj_direction] = cano_data_repo.projected_points[proj_direction][subject_id]
                 # ic(cano_data_repo.projected_points.shape, projected_pts_batch[proj_direction].shape)
@@ -137,10 +137,10 @@ if __name__ == '__main__':
 
             if opt['predeform']:
                 predeform_offsets = model.predeformer(geom_feats_batch).permute(0,2,1) * opt['predeform_scaling']  # [b, n_pts, 3]
-                out_unposed = inv_lbs(basepoints_batch + predeform_offsets, joints_tpose_batch, cano_smpl_param_batch, cano_data_repo.smpl_parents, weights_cano_batch, return_tfs=True)
+                out_unposed = inv_lbs(basepoints_batch + predeform_offsets, joints_tpose_batch, cano_smpl_param_batch, cano_data_repo.smpl_parents, weights_cano_batch)
             else:
-                out_unposed = inv_lbs(basepoints_batch, joints_tpose_batch, cano_smpl_param_batch, cano_data_repo.smpl_parents, weights_cano_batch, return_tfs=True)
-            out = lbs(out_unposed['v_unposed'], joints_tpose_batch, pose, cano_data_repo.smpl_parents, lbs_weights=weights_cano_batch, return_tfs=True)
+                out_unposed = inv_lbs(basepoints_batch, joints_tpose_batch, cano_smpl_param_batch, cano_data_repo.smpl_parents, weights_cano_batch)
+            out = lbs(out_unposed['v_unposed'], joints_tpose_batch, pose, cano_data_repo.smpl_parents, lbs_weights=weights_cano_batch)
             posed_verts = out['v_posed']
 
             unposing_tfs = out_unposed['v_tfs_inv'] # [1, 85722, 4, 4]
@@ -187,11 +187,8 @@ if __name__ == '__main__':
                 m2s = torch.sum(pc_diff * closest_target_normals, dim=-1) # project on direction of the normal of these gt points
                 m2s = torch.mean(m2s**2, 1) # the length (squared) is the approx. pred point to scan surface dist.
 
-                # m2s = m2s_real.mean(1)
-
                 rgl_len = torch.mean((residuals ** 2).reshape(bs, -1), 1)
                 rgl_latent = torch.mean(geom_feats_batch**2)
-                # rgl_latent = torch.zeros(1).cuda()
 
                 # ------------------------------------------
                 # ------------ accumulate stats ------------

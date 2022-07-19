@@ -52,7 +52,7 @@ if __name__ == '__main__':
             n_points_cano_data=opt['n_cano_points'],
             cano_pose_leg_angle=opt['leg_angle'],
             smpl_model_path=opt['smpl_model_path'],
-    ).set_device('cuda')
+    ).set_device(opt['device'])
 
     train_dataset = FITEPosmapDataset(
             subject_list=opt['subject_list'],
@@ -76,8 +76,9 @@ if __name__ == '__main__':
                       c_pose=opt['c_pose'],
                       up_mode=opt['up_mode'],
                       use_dropout=opt['use_dropout']
-                      ).cuda()
+                      ).to(opt['device'])
 
+    cano_data_repo.geom_feats.requires_grad_(True)
     optimizer = torch.optim.Adam([
             {"params": model.parameters(), "lr": opt['lr']},
             {"params": cano_data_repo.geom_feats, "lr": opt['lr_geomfeat']}
@@ -95,18 +96,18 @@ if __name__ == '__main__':
         loss_weights = torch.tensor([opt['w_s2m'], opt['w_m2s'], wrise_normal, wdecay_rgl, opt['w_latent_rgl']])
 
         for i, batch in train_bar_per_epoch:
-            points_gt = batch['points'].cuda()
-            normals_gt = batch['normals'].cuda()
-            pose = batch['pose'].cuda()
-            transl = batch['transl'].cuda() # NOTE already removed from points, needed only for debug
-            subject_id = batch['subject_id'].cuda()
+            points_gt = batch['points'].to(opt['device'])
+            normals_gt = batch['normals'].to(opt['device'])
+            pose = batch['pose'].to(opt['device'])
+            transl = batch['transl'].to(opt['device']) # NOTE already removed from points, needed only for debug
+            subject_id = batch['subject_id'].to(opt['device'])
 
             
             posmaps_batch = {}
             projected_pts_batch = {}
             for proj_id in range(len(model.projection_list)):
                 proj_direction = model.projection_list[proj_id]['dirc']
-                posmaps_batch[proj_direction] = batch[f'posmap_{proj_direction}'].cuda()
+                posmaps_batch[proj_direction] = batch[f'posmap_{proj_direction}'].to(opt['device'])
                 projected_pts_batch[proj_direction] = cano_data_repo.projected_points[proj_direction][subject_id]
 
             ### NOTE get transformations
@@ -119,11 +120,11 @@ if __name__ == '__main__':
 
             if opt['predeform']:
                 predeform_offsets = model.predeformer(geom_feats_batch).permute(0,2,1) * opt['predeform_scaling']  # [b, n_pts, 3]
-                out_unposed = inv_lbs(basepoints_batch + predeform_offsets, joints_tpose_batch, cano_smpl_param_batch, cano_data_repo.smpl_parents, weights_cano_batch, return_tfs=True)
+                out_unposed = inv_lbs(basepoints_batch + predeform_offsets, joints_tpose_batch, cano_smpl_param_batch, cano_data_repo.smpl_parents, weights_cano_batch)
             else:
-                out_unposed = inv_lbs(basepoints_batch, joints_tpose_batch, cano_smpl_param_batch, cano_data_repo.smpl_parents, weights_cano_batch, return_tfs=True)
+                out_unposed = inv_lbs(basepoints_batch, joints_tpose_batch, cano_smpl_param_batch, cano_data_repo.smpl_parents, weights_cano_batch)
             
-            out = lbs(out_unposed['v_unposed'], joints_tpose_batch, pose, cano_data_repo.smpl_parents, lbs_weights=weights_cano_batch, return_tfs=True)
+            out = lbs(out_unposed['v_unposed'], joints_tpose_batch, pose, cano_data_repo.smpl_parents, lbs_weights=weights_cano_batch)
             posed_verts = out['v_posed']
 
             unposing_tfs = out_unposed['v_tfs_inv'] # [1, 85722, 4, 4]

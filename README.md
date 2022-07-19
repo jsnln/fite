@@ -4,10 +4,6 @@
 
 A **First-Implicit-Then-Explicit (FITE)** pipeline for modeling humans in clothing.
 
-### NOTE
-
-*Still doing some tests. This code may undergo frequent updates in the next few days.*
-
 ### Overview
 
 Our code consists of three main steps:
@@ -39,6 +35,8 @@ python -m step3_point_avatar.test_fite_point_avatar
 The animated point clouds will be saved at `results/resynth_pretrained/step3-test-pcds`.
 
 ### The Whole Pipeline
+
+Prior to running the pipeline, set `expname` in `configs/common.yaml` to the name of your experiment and keep it fixed. 
 
 #### 1. Dependencies
 

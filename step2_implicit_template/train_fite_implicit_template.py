@@ -47,7 +47,8 @@ if __name__ == '__main__':
     ### NOTE data processor
     data_processor = FITEDataProcessor(opt['datamodule']['processor'],
                                           smpl_model_path=opt['smpl_model_path'],
-                                          meta_info=dataset_train.meta_info)
+                                          meta_info=dataset_train.meta_info,
+                                          device=opt['device'])
 
 
     model = SNARFModelDiffusedSkinning(opt['model']['soft_blend'],
@@ -58,7 +59,8 @@ if __name__ == '__main__':
                                         cpose_smpl_mesh_path=join(opt['data_templates_path'], opt['datamodule']['subject'], opt['datamodule']['subject'] + '_minimal_cpose.ply'),
                                         cpose_weight_grid_path=join(opt['data_templates_path'], opt['datamodule']['subject'], opt['datamodule']['subject'] + '_cano_lbs_weights_grid_float32.npy'),
                                         meta_info=dataset_train.meta_info,
-                                        data_processor=data_processor).to('cuda')
+                                        device=opt['device'],
+                                        data_processor=data_processor).to(opt['device'])
 
 
     optimizer = torch.optim.Adam(model.parameters(), lr=opt['model']['optim']['lr'])
@@ -72,7 +74,7 @@ if __name__ == '__main__':
         tloader = tqdm(dataloader)
         for batch in tloader:
             for data_key in batch:
-                batch[data_key] = batch[data_key].to('cuda')
+                batch[data_key] = batch[data_key].to(opt['device'])
             loss = model.training_step(batch, 0)
 
             optimizer.zero_grad()

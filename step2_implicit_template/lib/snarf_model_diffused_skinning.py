@@ -15,15 +15,14 @@ import kaolin
 
 class SNARFModelDiffusedSkinning(nn.Module):
 
-    def __init__(self, soft_blend, smpl_model_path, pose_conditioning, opt_network, subject, cpose_smpl_mesh_path, cpose_weight_grid_path, meta_info, data_processor=None):
+    def __init__(self, soft_blend, smpl_model_path, pose_conditioning, opt_network, subject, cpose_smpl_mesh_path, cpose_weight_grid_path, meta_info, device, data_processor=None):
         super().__init__()
-
 
         self.soft_blend = soft_blend
         self.pose_conditioning = pose_conditioning
 
         self.network = ImplicitNetwork(**opt_network)
-        self.deformer = ForwardDeformerDiffusedSkinning(subject, cpose_smpl_mesh_path, cpose_weight_grid_path)
+        self.deformer = ForwardDeformerDiffusedSkinning(subject, cpose_smpl_mesh_path, cpose_weight_grid_path, device=device)
 
         print(self.network)
         print(self.deformer)
@@ -367,7 +366,7 @@ class SNARFModelDiffusedSkinning(nn.Module):
             mesh.vertices = verts_mesh_deformed
 
         if with_weights:
-            verts  = torch.tensor(mesh.vertices).cuda().float()
+            verts  = torch.tensor(mesh.vertices).to(smpl_verts.device).cuda().float()
             weights = self.deformer.query_weights(verts[None], None).clamp(0,1)[0]
             mesh.visual.vertex_colors = weights2colors(weights.data.cpu().numpy())
 

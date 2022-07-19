@@ -15,7 +15,7 @@ class ForwardDeformerDiffusedSkinning(torch.nn.Module):
         D: space dimension
     """
 
-    def __init__(self, subject, cpose_smpl_mesh_path, cpose_weight_grid_path):
+    def __init__(self, subject, cpose_smpl_mesh_path, cpose_weight_grid_path, device):
         super().__init__()
 
         self.init_bones = [0, 1, 2, 4, 5, 16, 17, 18, 19]
@@ -28,14 +28,14 @@ class ForwardDeformerDiffusedSkinning(torch.nn.Module):
         
         if self.bbox_grid_extend is None or self.bbox_grid_center is None or self.weight_grid is None:
             cpose_smpl_mesh = trimesh.load(cpose_smpl_mesh_path, process=False)
-            cpose_verts = torch.from_numpy(np.array(cpose_smpl_mesh.vertices)).float().cuda()[:, :3]
+            cpose_verts = torch.from_numpy(np.array(cpose_smpl_mesh.vertices)).float().to(device)[:, :3]
             bbox_data_min = cpose_verts.min(0).values
             bbox_data_max = cpose_verts.max(0).values
             bbox_data_extend = (bbox_data_max - bbox_data_min).max()
             bbox_grid_extend = bbox_data_extend * 1.1
             center = (bbox_data_min + bbox_data_max) / 2
             
-            grid_pt = torch.from_numpy(np.load(cpose_weight_grid_path)).float().cuda()
+            grid_pt = torch.from_numpy(np.load(cpose_weight_grid_path)).float().to(device)
 
             self.bbox_grid_extend = bbox_grid_extend
             self.bbox_grid_center = center

@@ -140,8 +140,7 @@ class FITECanoDataRepository:
         self.cano_pose_leg_angle = cano_pose_leg_angle
 
         n_subjects = len(self.subject_list)
-        self.geom_feats = torch.ones(n_subjects, channels_geom_feat, n_points_cano_data).normal_(mean=0., std=0.01).cuda()
-        self.geom_feats.requires_grad = True
+        self.geom_feats = torch.ones(n_subjects, channels_geom_feat, n_points_cano_data).normal_(mean=0., std=0.01)
 
         self.cano_data_list = {
             'verts_mesh': [],
@@ -179,11 +178,11 @@ class FITECanoDataRepository:
             subject_name = self.subject_list[subject_id]['name']
             subject_gender = self.subject_list[subject_id]['gender']
             if subject_gender == 'male':
-                joints_tpose.append(vertices2joints(self.smpl_model_male.J_regressor.cuda(), self.verts_tpose[[subject_id]].cuda()))
+                joints_tpose.append(vertices2joints(self.smpl_model_male.J_regressor, self.verts_tpose[[subject_id]]))
             elif subject_gender == 'female':
-                joints_tpose.append(vertices2joints(self.smpl_model_female.J_regressor.cuda(), self.verts_tpose[[subject_id]].cuda()))
+                joints_tpose.append(vertices2joints(self.smpl_model_female.J_regressor, self.verts_tpose[[subject_id]]))
             elif subject_gender == 'neutral':
-                joints_tpose.append(vertices2joints(self.smpl_model_neutral.J_regressor.cuda(), self.verts_tpose[[subject_id]].cuda()))
+                joints_tpose.append(vertices2joints(self.smpl_model_neutral.J_regressor, self.verts_tpose[[subject_id]]))
             else:
                 print(f'[ERROR] Unknown gender type: {subject_gender}')
         joints_tpose = torch.cat(joints_tpose, 0)

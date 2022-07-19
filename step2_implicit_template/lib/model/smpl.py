@@ -6,7 +6,7 @@ from os.path import join
 
 class SMPLServer(torch.nn.Module):
 
-    def __init__(self, smpl_model_path, gender='neutral', betas=None, v_template=None):
+    def __init__(self, smpl_model_path, gender='neutral', betas=None, v_template=None, device='cuda'):
         super().__init__()
 
 
@@ -15,7 +15,7 @@ class SMPLServer(torch.nn.Module):
                          batch_size=1,
                          use_hands=False,
                          use_feet_keypoints=False,
-                         dtype=torch.float32).cuda()
+                         dtype=torch.float32).to(device)
 
         self.bone_parents = self.smpl.bone_parents.astype(int)
         self.bone_parents[0] = -1
@@ -23,17 +23,17 @@ class SMPLServer(torch.nn.Module):
         for i in range(24): self.bone_ids.append([self.bone_parents[i], i])
 
         if v_template is not None:
-            self.v_template = torch.tensor(v_template).float().cuda()
+            self.v_template = torch.tensor(v_template).float().to(device)
         else:
             self.v_template = None
 
         if betas is not None:
-            self.betas = torch.tensor(betas).float().cuda()
+            self.betas = torch.tensor(betas).float().to(device)
         else:
             self.betas = None
 
         # define the canonical pose
-        param_canonical = torch.zeros((1, 86),dtype=torch.float32).cuda()
+        param_canonical = torch.zeros((1, 86),dtype=torch.float32).to(device)
         param_canonical[0, 0] = 1
         param_canonical[0, 9] = 15/180*np.pi#np.pi / 6
         param_canonical[0, 12] = -15/180*np.pi#np.pi / 6
@@ -46,8 +46,8 @@ class SMPLServer(torch.nn.Module):
         ### NOTE add normals
         smpl_mesh = trimesh.Trimesh(output['smpl_verts'][0].cpu().numpy(), self.smpl.faces, process=False)
 
-        self.vnormals_c = torch.from_numpy(smpl_mesh.vertex_normals.copy()).float()[None].cuda()
-        self.faces_c = torch.from_numpy(self.smpl.faces.astype(np.int32)).long().cuda()
+        self.vnormals_c = torch.from_numpy(smpl_mesh.vertex_normals.copy()).float()[None].to(device)
+        self.faces_c = torch.from_numpy(self.smpl.faces.astype(np.int32)).long().to(device)
         self.verts_c = output['smpl_verts']
         self.joints_c = output['smpl_jnts']
         self.tfs_c_inv = output['smpl_tfs'].squeeze(0).inverse()

@@ -1,5 +1,6 @@
 expname: resynth_pretrained
 result_folder: results
+device: 'cuda'
 
 smpl_model_path: smpl_models
 data_scans_path: data_scans

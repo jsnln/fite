@@ -42,10 +42,12 @@ if __name__ == '__main__':
                                        cpose_smpl_mesh_path=join(opt['data_templates_path'], opt['datamodule']['subject'], opt['datamodule']['subject'] + '_minimal_cpose.ply'),
                                        cpose_weight_grid_path=join(opt['data_templates_path'], opt['datamodule']['subject'], opt['datamodule']['subject'] + '_cano_lbs_weights_grid_float32.npy'),
                                        meta_info=meta_info,
-                                       data_processor=None).to('cuda')
+                                       device=opt['device'],
+                                       data_processor=None).to(opt['device'])
 
     model.load_state_dict(torch.load(checkpoint_path))
     model.deformer.init_bones = np.arange(24)
+    model.eval()
 
     # pose format conversion
     smplx_to_smpl = list(range(66)) + [72, 73, 74, 117, 118, 119]  # SMPLH to SMPL
@@ -59,7 +61,7 @@ if __name__ == '__main__':
             f = np.load(f)
             smpl_params = np.zeros(86)
             smpl_params[0], smpl_params[4:76] = 1, f['pose']
-            smpl_params = torch.tensor(smpl_params).float().cuda()
+            smpl_params = torch.tensor(smpl_params).float().to(opt['device'])
             smpl_params_all.append(smpl_params)
         smpl_params_all = torch.stack(smpl_params_all)
 
@@ -76,7 +78,7 @@ if __name__ == '__main__':
         for i in range(smpl_params_all.shape[0]):
             smpl_params_all[i, 4:7] = rectify_pose(smpl_params_all[i, 4:7], root_abs)
 
-        smpl_params_all = torch.tensor(smpl_params_all).float().cuda()
+        smpl_params_all = torch.tensor(smpl_params_all).float().to(opt['device'])
 
     ### NOTE choose only min l1-norm pose
     l1_norm_pose = smpl_params_all.abs().sum(-1)    # [n_poses,]
@@ -106,7 +108,7 @@ if __name__ == '__main__':
     faces_mesh = results_lowres['mesh_cano'].faces
     weights_mesh = results_lowres['weights_cano'].cpu().numpy()
 
-    points = torch.from_numpy(results_highres['mesh_cano'].vertices).float()[None].cuda()
+    points = torch.from_numpy(results_highres['mesh_cano'].vertices).float()[None].to(opt['device'])
     downsampled_points, downsampled_indices = sample_farthest_points(points, K=opt['n_cano_points'])
     
     verts_downsampled = downsampled_points[0].cpu().numpy()

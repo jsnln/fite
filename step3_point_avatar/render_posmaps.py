@@ -48,7 +48,7 @@ def shift(p_verts, y_shift):
     return p_verts
 
 @torch.no_grad()
-def load_data(fn, cano_data, parents, unposed_joints, cano_pose_param, remove_root_pose):
+def load_data(fn, cano_data, parents, unposed_joints, cano_pose_param, remove_root_pose, device):
     smpl_params = np.load(fn)
     transl = smpl_params['transl']
     pose = smpl_params['pose']
@@ -56,9 +56,9 @@ def load_data(fn, cano_data, parents, unposed_joints, cano_pose_param, remove_ro
     verts = cano_data['verts_mesh']
     weights = cano_data['weights_mesh']
 
-    verts = torch.from_numpy(verts).float()[None].cuda()
-    weights = torch.from_numpy(weights).float()[None].cuda()
-    pose = torch.from_numpy(pose).float()[None].cuda()
+    verts = torch.from_numpy(verts).float()[None].to(device)
+    weights = torch.from_numpy(weights).float()[None].to(device)
+    pose = torch.from_numpy(pose).float()[None].to(device)
 
     ### NOTE remove root pose
     if remove_root_pose:
@@ -222,15 +222,15 @@ if __name__ == '__main__':
     n_joints = opt['num_joints']
 
     smpl_model = smplx.create(opt['smpl_model_path'], model_type='smpl', gender=GENDER)
-    smpl_parents = smpl_model.parents.clone().cuda()
+    smpl_parents = smpl_model.parents.clone().to(opt['device'])
 
     cano_data = np.load(FN_CANO_DATA)
-    cano_pose_param = torch.zeros(1, 72).cuda()
+    cano_pose_param = torch.zeros(1, 72).to(opt['device'])
     cano_pose_param[:, 5] =  opt['leg_angle'] / 180*math.pi
     cano_pose_param[:, 8] = -opt['leg_angle'] / 180*math.pi
 
     tpose_verts = torch.from_numpy(cano_data['verts_tpose']).float()[None]
-    tpose_joints = vertices2joints(smpl_model.J_regressor, tpose_verts).cuda()
+    tpose_joints = vertices2joints(smpl_model.J_regressor, tpose_verts).to(opt['device'])
 
     if not os.path.exists(join(opt['data_posmaps_path'], SUBJECT, SPLIT)):
         os.makedirs(join(opt['data_posmaps_path'], SUBJECT, SPLIT), exist_ok=True)
@@ -245,6 +245,7 @@ if __name__ == '__main__':
                                                                 smpl_parents,
                                                                 tpose_joints,
                                                                 cano_pose_param,
+                                                                device=opt['device'],
                                                                 remove_root_pose=True)
         rgb_dict_this_pose = {}
         for proj_id in range(len(proj_list)):

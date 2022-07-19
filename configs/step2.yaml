@@ -1,7 +1,7 @@
 
 datamodule:
   num_workers: 10
-  subject: 'rp_carla_posed_004'
+  subject: 'rp_anna_posed_001'
   clothing: ''
 
   batch_size: 8

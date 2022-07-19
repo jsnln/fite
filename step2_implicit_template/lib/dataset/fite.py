@@ -78,14 +78,14 @@ class FITEDataSet(Dataset):
 ''' Used to generate groud-truth occupancy and bone transformations in batchs during training '''
 class FITEDataProcessor():
 
-    def __init__(self, opt, smpl_model_path, meta_info, **kwargs):
+    def __init__(self, opt, smpl_model_path, meta_info, device, **kwargs):
 
         self.opt = opt
         self.gender = meta_info['gender']
         self.v_template = meta_info['v_template']
 
         self.smpl_server = SMPLServer(smpl_model_path=smpl_model_path, gender=self.gender, v_template=self.v_template)
-        self.smpl_faces = torch.tensor(self.smpl_server.smpl.faces.astype('int')).unsqueeze(0).cuda()
+        self.smpl_faces = torch.tensor(self.smpl_server.smpl.faces.astype('int')).unsqueeze(0).to(device)
         
         self.sampler = PointInSpace(**opt['sampler'])
 
