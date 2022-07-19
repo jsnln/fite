@@ -17,7 +17,7 @@ class FITEDataSet(Dataset):
     def __init__(self, dataset_path, data_templ_path, opt, subject, clothing, split):
 
 
-        self.regstr_list = glob.glob(join(dataset_path, subject, split, clothing+'_**.npz'), recursive=True)
+        self.regstr_list = glob.glob(join(dataset_path, subject, split, clothing+'*.npz'), recursive=True)
 
         with open(join(data_templ_path, 'gender_list.yaml') ,'r') as f:
             self.gender = yaml.safe_load(f)[subject]

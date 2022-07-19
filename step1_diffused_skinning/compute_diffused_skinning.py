@@ -12,7 +12,7 @@ import tqdm
 
 import smplx
 from smplx.lbs import vertices2joints
-from fiteutils.lbs import lbs
+from .lbs import lbs
 
 if __name__ == '__main__':
 

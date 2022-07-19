@@ -2,7 +2,7 @@ import torch
 import torch.nn.functional as F
 
 def chamfer_loss_separate(output, target, weight=1e4, phase='train', debug=False):
-    from ..chamferdist.chamferdist import ChamferDistance
+    from chamferdist.chamferdist import ChamferDistance
     cdist = ChamferDistance()
     model2scan, scan2model, idx1, idx2 = cdist(output, target)
     if phase == 'train':

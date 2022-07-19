@@ -1,9 +1,6 @@
 import yaml
 from tqdm import tqdm
-import matplotlib.pyplot as plt
-import numpy as np
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
 
@@ -30,7 +27,7 @@ if __name__ == '__main__':
     with open(join('configs', f'{opt["expname"]}_subject_list.yaml'), 'r') as subject_list_f:
         subject_list = yaml.safe_load(subject_list_f)
         opt['subject_list'] = subject_list
-    with open(join('configs', f'{opt["expname"]}_projection_list.yaml'), 'r') as projection_list_f:
+    with open(join('configs', f'projection_list.yaml'), 'r') as projection_list_f:
         projection_list = yaml.safe_load(projection_list_f)
         opt['projection_list'] = projection_list
 

@@ -42,6 +42,8 @@ The animated point clouds will be saved at `results/resynth_pretrained/step3-tes
 
 #### 1. Dependencies
 
+We have tested this code on Ubuntu 20.04 with Python 3.8.10 and CUDA 11.1.
+
 To run the whole pipeline, the user needs to install the following dependencies.
 
 1. The `PointInterpolant` executable from https://github.com/mkazhdan/PoissonRecon. After successfully building `PointInterpolant`, set `point_interpolant_exe` in the config file `configs/step1.yaml` as the path to the executable.
@@ -50,6 +52,7 @@ To run the whole pipeline, the user needs to install the following dependencies.
    git clone https://github.com/mkazhdan/PoissonRecon
    cd PoissonRecon
    make pointinterpolant
+   cd ..
    ```
 
 2. Git clone https://github.com/NVIDIAGameWorks/kaolin.git to the FITE project directory and build it.
@@ -57,7 +60,7 @@ To run the whole pipeline, the user needs to install the following dependencies.
    ```bash
    git clone --recursive https://github.com/NVIDIAGameWorks/kaolin
    cd kaolin
-   git checkout v0.11.0 # other versions should also work; we use v0.11.0
+   git checkout v0.11.0     # optional, other versions should also work
    python setup.py install 	# use --user if needed
    cd ..
    ```
@@ -86,21 +89,20 @@ To run the whole pipeline, the user needs to install the following dependencies.
 
 5. Install these python packages:
 
-   ```
-   matplotlib
-   pyyaml
-   tqdm
-   smplx
-   torch
-   trimesh
-   numpy
-   opencv-python
-   pytorch3d
-   imageio
-   pyglm
-   pyopengl
-   glfw
-   scipy
+   ```bash
+   pyyaml   # 6.0
+   tqdm     # 4.62.3
+   smplx    # 0.1.28
+   torch    # 1.10.0+cu111
+   trimesh  # 3.10.2
+   numpy    # 1.22.3
+   opencv-python  # 4.5.5
+   scikit-image   # 0.18.1
+   pytorch3d      # 0.6.1
+   pyglm    # 2.5.7
+   pyopengl # 3.1.0
+   glfw     # 2.1.0
+   scipy    # 1.8.0
    ```
 
 #### 2. Data Preparation for Training
@@ -116,7 +118,7 @@ To train on your own data, you need to prepare the scans (which must be closed m
 'scan_n':	of shape (N_points, 3), normals of the sampled points (unit length)
 ```
 
-These `.npz` files should be placed at `data_scans/{subject_name}/train`. 
+Note that the number of points of `scan_pc` and `scan_n` must be the same across different scans (for tensor batching), while the number of vertices and faces can be different across scans. These `.npz` files should be placed at `data_scans/{subject_name}/train`. 
 
 A minimal SMPL body matching the scans is also needed. Prepare the T-pose SMPL mesh as `{subject_name}_minimal_tpose.ply`, and put it in `data_templates/{subject_name}/` . Finally, add the gender of the subject to `data_templates/gender_list.yaml`.
 
@@ -141,11 +143,47 @@ After it finishes, a file named `{subject_name}_cano_lbs_weights_grid_float32.np
 
 #### 4. Implicit Templates
 
-Coming soon
+```bash
+cd step2_implicit_templates
+python setup.py install    # --user if needed
+cd ..
+```
+
+Change `datamodule.subject` in `configs/step2.yaml` to the name of the subject to train. Then run
+
+```bash
+python -m step2_implicit_template.train_fite_implicit_template
+```
+
+Intermediate visualizations and checkpoints can be found at `results/{expname}/step2-results` and `results/{expname}/step2-results`. After the training is done, run
+
+```bash
+python -m step2_implicit_template.extract_fite_implicit_template
+```
+
+This extracts the implicit templates in canonical poses to `data_templates`.
 
 #### 5. Point Avatar
 
-Coming soon
+Prior to train the point avatar(s), the user needs to render the posmaps:
+
+```bash
+python -m step3_point_avatar.render_posmaps {subject_name} {dataset_split}
+```
+
+Recall that our point avatar part is a multi-subject model. If you do use multiple subjects, each should go through all the steps above. After that, collect the names and genders of all subjects in a config file `configs/{expname}_subject_list.yaml`. Then, run
+
+```bash
+python -m step3_point_avatar.train_fite_point_avatar
+```
+
+After training is complete, prepare test poses (only `pose` and `transl` are needed) in `data_scans/{subject_name}/test/` and render posmaps same as above (test split). Then, run
+
+```bash
+python -m step3_point_avatar.test_fite_point_avatar
+```
+
+The outputted point clouds can be found at `results/{expname}/step3-test-pcds/`.
 
 ### Acknowledgements & A Note on the License
 

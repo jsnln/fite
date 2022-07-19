@@ -45,7 +45,6 @@ if __name__ == '__main__':
                                        data_processor=None).to('cuda')
 
     model.load_state_dict(torch.load(checkpoint_path))
-    # model.load_state_dict(torch.load(checkpoint_path)['state_dict'], strict=False)
     model.deformer.init_bones = np.arange(24)
 
     # pose format conversion
@@ -90,14 +89,19 @@ if __name__ == '__main__':
     data = model.smpl_server.forward(smpl_params, absolute=True)
     data['smpl_thetas'] = smpl_params[:, 4:76]
 
+    print(f'[LOG] extracting implicit templates')
     # low resolution mesh
     results_lowres = model.plot(data, res=opt['extraction']['resolution_low'])
     results_lowres['mesh_cano'].export(join(opt['data_templates_path'], subject, f'{subject}_cano_mesh_{opt["extraction"]["resolution_low"]}.ply'))
+    print(f'[LOG] extracted mesh at resolution {opt["extraction"]["resolution_low"]}. saving it at ' + join(opt['data_templates_path'], subject, f'{subject}_cano_mesh_{opt["extraction"]["resolution_low"]}.ply'))
 
     # high resolution mesh
     results_highres = model.plot(data, res=opt['extraction']['resolution_high'])
     results_highres['mesh_cano'].export(join(opt['data_templates_path'], subject, f'{subject}_cano_mesh_{opt["extraction"]["resolution_high"]}.ply'))
+    print(f'[LOG] extracted mesh at resolution {opt["extraction"]["resolution_high"]}. saving it at ' + join(opt['data_templates_path'], subject, f'{subject}_cano_mesh_{opt["extraction"]["resolution_high"]}.ply'))
 
+
+    print(f'[LOG] downsampling the high resolution mesh and packing the clothed template')
     verts_mesh = results_lowres['mesh_cano'].vertices
     faces_mesh = results_lowres['mesh_cano'].faces
     weights_mesh = results_lowres['weights_cano'].cpu().numpy()
@@ -119,3 +123,5 @@ if __name__ == '__main__':
             normals_downsampled=normals_downsampled,
             weights_downsampled=weights_downsampled,
             verts_tpose=verts_tpose)
+
+    print(f'[LOG] clothed template packed at ' + join(opt['data_templates_path'], f'{subject}_clothed_template.npz'))

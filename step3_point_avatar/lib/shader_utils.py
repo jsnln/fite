@@ -19,7 +19,7 @@ def loadShader(shaderType, shaderFile):
     strFilename = findFileOrThrow(shaderFile)
     shaderData = None
     
-    print(f"Found shader filename = {strFilename}, corresponding to {shaderFile}")
+    print(f"Found shader filename = {strFilename}")
 
     with open(strFilename, 'r') as f:
         shaderData = f.read()

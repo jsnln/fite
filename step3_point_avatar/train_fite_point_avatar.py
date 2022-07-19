@@ -10,10 +10,8 @@ from os.path import join
 from .lib.fite_model import FITEModel
 from .lib.dataset import FITEPosmapDataset, FITECanoDataRepository
 from .lib.losses import normal_loss, chamfer_loss_separate
-from .lib.lbs import lbs, inv_lbs
 from .lib.utils import save_result_examples, adjust_loss_weights
-
-from .parser import parse_args
+from .lib.lbs import lbs, inv_lbs
 
 if __name__ == '__main__':
 
@@ -27,7 +25,7 @@ if __name__ == '__main__':
     with open(join('configs', f'{opt["expname"]}_subject_list.yaml'), 'r') as subject_list_f:
         subject_list = yaml.safe_load(subject_list_f)
         opt['subject_list'] = subject_list
-    with open(join('configs', f'{opt["expname"]}_projection_list.yaml'), 'r') as projection_list_f:
+    with open(join('configs', f'projection_list.yaml'), 'r') as projection_list_f:
         projection_list = yaml.safe_load(projection_list_f)
         opt['projection_list'] = projection_list
 
@@ -199,7 +197,7 @@ if __name__ == '__main__':
                 with torch.no_grad():
                     debug_pcd_posed_offset = torch.cat([offset_verts[0] + transl[0][None], normals[0]], 1).detach().cpu().numpy()
                     for j in range(offset_verts.shape[0])[::save_spacing]:
-                        save_result_examples(TRAINPCD_PATH, f'{{opt["expname"]}}_epoch{epoch:05d}', batch['basename'][j],
+                        save_result_examples(TRAINPCD_PATH, f'{opt["expname"]}_epoch{epoch:05d}', batch['basename'][j],
                                     points=offset_verts[j]+transl[j][None], normals=normals[j])
                         if opt['save_cano'] and opt['predeform']:
                             save_result_examples(TRAINPCD_PATH, f'{opt["expname"]}_epoch{epoch:05d}', batch['basename'][j] + '_cano',
@@ -210,5 +208,7 @@ if __name__ == '__main__':
             total_iters += 1
 
         if (epoch + 1) % opt['save_ckpt_every'] == 0:
-            torch.save(model.state_dict(), join(CHECKPOINTS_PATH, f'checkpoint-{epoch:03d}.pt'))
-            torch.save(cano_data_repo.geom_feats, join(CHECKPOINTS_PATH, f'geom-feats-{epoch:03d}.pt'))
+            torch.save(model.state_dict(), join(CHECKPOINTS_PATH, f'checkpoint-{epoch+1:03d}.pt'))
+            torch.save(cano_data_repo.geom_feats, join(CHECKPOINTS_PATH, f'geom-feats-{epoch+1:03d}.pt'))
+            torch.save(model.state_dict(), join(CHECKPOINTS_PATH, f'checkpoint-latest.pt'))
+            torch.save(cano_data_repo.geom_feats, join(CHECKPOINTS_PATH, f'geom-feats-latest.pt'))

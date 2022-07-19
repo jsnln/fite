@@ -2,7 +2,7 @@
 datamodule:
   num_workers: 10
   subject: 'rp_carla_posed_004'
-  clothing: 'rp_carla_posed_004.96'
+  clothing: ''
 
   batch_size: 8
   processor:
@@ -17,10 +17,10 @@ datamodule:
 trainer:
   gradient_clip_val: 0.1
   check_val_every_n_epoch: 4
-  save_vis_every_n_iters: 50
+  save_vis_every_n_iters: 500
   save_ckpt_every_n_iters: 1000
   deterministic: true
-  max_steps: 9001
+  max_steps: 8001
   gpus: 1
 model:
   # shape MLP

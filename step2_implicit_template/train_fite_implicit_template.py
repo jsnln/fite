@@ -1,4 +1,5 @@
 import yaml
+from tqdm import tqdm
 import cv2
 import torch
 from torch.nn.utils import clip_grad_norm_
@@ -66,8 +67,10 @@ if __name__ == '__main__':
     max_steps = opt['trainer']['max_steps']
 
     total_steps = 0
+    total_epochs = 0
     while total_steps < max_steps:
-        for batch in loader:
+        tloader = tqdm(dataloader)
+        for batch in tloader:
             for data_key in batch:
                 batch[data_key] = batch[data_key].to('cuda')
             loss = model.training_step(batch, 0)
@@ -77,7 +80,7 @@ if __name__ == '__main__':
             clip_grad_norm_(model.parameters(), max_norm=opt['trainer']['gradient_clip_val'])
             optimizer.step()
 
-            print(f'[{total_steps:05d}/{max_steps:05d}] loss = {loss.item():.4e}')
+            tloader.set_description(f'[Epoch: {total_epochs:03d}; Step: {total_steps:05d}/{max_steps:05d}] loss_bce = {loss.item():.4e}')
 
             if total_steps % opt['trainer']['save_vis_every_n_iters'] == 0:
                 with torch.no_grad():
@@ -89,3 +92,4 @@ if __name__ == '__main__':
                 torch.save(model.state_dict(), join(checkpoint_folder, f'checkpoint-{total_steps:05d}.pt'))
 
             total_steps += 1
+        total_epochs += 1
