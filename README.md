@@ -84,7 +84,7 @@ To run the whole pipeline, the user needs to install the following dependencies.
 
     Then set `smpl_model_path` in `configs/common.yaml` as the path to this folder.
 
-5. Install these pythonpackages:
+5. Install these python packages:
 
    ```
    matplotlib
@@ -149,7 +149,7 @@ Coming soon
 
 ### Acknowledgements & A Note on the License
 
-This code is partly based on [SNARF](https://github.com/xuchen-ethz/snarf) and [POP](https://github.com/qianlim/POP). We thank those authors for making their code publicly available. Note that the code in `step2_implicit_template` is inherited [SNARF](https://github.com/xuchen-ethz/snarf), while that in `step3_point_avatar` is herited from [POP](https://github.com/qianlim/POP). Please follow their original licenses if you intend to use them.
+This code is partly based on [SNARF](https://github.com/xuchen-ethz/snarf) and [POP](https://github.com/qianlim/POP). We thank those authors for making their code publicly available. Note that the code in `step2_implicit_template` is inherited from [SNARF](https://github.com/xuchen-ethz/snarf), while that in `step3_point_avatar` is herited from [POP](https://github.com/qianlim/POP). Please follow their original licenses if you intend to use them.
 
 
 
