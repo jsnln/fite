@@ -63,11 +63,10 @@ To run the whole pipeline, the user needs to install the following dependencies.
    cd ..
    ```
 
-3. Git clone https://github.com/krrish94/chamferdist/ to the FITE project directory and build it.
+
+3. Download chamfer distance from this implementation: https://github.com/krrish94/chamferdist/tree/97051583f6fe72d5d4a855696dbfda0ea9b73a6a and build it.
 
    ```bash
-   # if you worry about versions, use this specific version: https://github.com/krrish94/chamferdist/tree/97051583f6fe72d5d4a855696dbfda0ea9b73a6a
-   git clone https://github.com/krrish94/chamferdist/
    cd chamferdist
    python setup.py install		# use --user if needed
    cd ..
