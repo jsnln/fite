@@ -4,6 +4,9 @@
 
 A **First-Implicit-Then-Explicit (FITE)** pipeline for modeling humans in clothing.
 
+![pipeline](./teaser/pipeline.png)
+
+
 ### Overview
 
 Our code consists of three main steps:
