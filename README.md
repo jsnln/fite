@@ -1,6 +1,12 @@
 # Learning Implicit Templates for Point-Based Clothed Human Modeling (ECCV 2022)
 
-[[project page]](https://jsnln.github.io/fite) 
+This repository contains the implementation of the paper
+
+**Learning Implicit Templates for Point-Based Clothed Human Modeling (ECCV 2022)**
+
+[Siyou Lin](https://jsnln.github.io/), [Hongwen Zhang](https://hongwenzhang.github.io/), [Zerong Zheng](https://zhengzerong.github.io/), [Ruizhi Shao](https://dsaurus.github.io/saurus), [Yebin Liu](http://liuyebin.com/)
+
+[Project page](https://jsnln.github.io/fite/index.html) | [Paper](https://arxiv.org/abs/2207.06955) | [Supp](https://jsnln.github.io/fite/assets/fite_supp.pdf)
 
 A **First-Implicit-Then-Explicit (FITE)** pipeline for modeling humans in clothing.
 
