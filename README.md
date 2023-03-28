@@ -12,6 +12,10 @@ A **First-Implicit-Then-Explicit (FITE)** pipeline for modeling humans in clothi
 
 ![pipeline](./teaser/pipeline.png)
 
+### [Update]
+
+- Uploaded the script for error measuring: `measure_error.py`. There was some typo in Eq. (6) and Eq. (7) in the the supplementary material. We used `pymeshlab` for measuring errors. The point-to-point distance is normalized by the bounding box diagonal when computing the Chamfer distance. Furthermore, both Chamfer distance and cosine similarity are divided by 2.
+
 
 ### Overview
 
